@@ -23,20 +23,17 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 echo
 
-## PULL LIST OF SECRETS FROM ENV VARS
-# write out all credentials to ~/.ssh and ~/.gcloud or .aws
-function load-root-creds {
+## LOGIN
+function load-creds {
   LPASS_DISABLE_PINENTRY=1 lpass login ${EMAIL}
-  #mkdir -p ~/.aws ~/.ssh
 	mkdir -p /root/.local/share/lpass
-  #chmod 644 ~/.ssh/*.pem ~/.ssh/id_rsa
 }
 
 ## RCLONE CONFIG
 curl https://rclone.org/install.sh | sudo bash
 
 ## SET SECRETS
-load-root-creds
+load-creds
 
 # TAILSCALE VPN
 TAILSCALE_ID=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)')
@@ -70,7 +67,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 # install other
-sudo apt update && sudo apt -y install unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv lastpass-cli
+sudo apt update && sudo apt -y install unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv lastpass-cli nfs-common cifs-utils
 
 ## CONFIGURE TOOLS
 tailscale up --authkey=${TAILSCALE_KEY}
@@ -88,7 +85,7 @@ rm index.html*
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 
 ## SYNC DIRECTORIES AND BACKUP
-#./root/scripts/homesync.sh
+/root/scripts/homesync.sh
 
 ## SSH Setup
 #echo "Port 23178" >> /etc/ssh/sshd_config
@@ -98,3 +95,7 @@ eval `ssh-agent`
 
 ## STATUS
 tailscale status
+sudo systemctl stop nginx
+update-rc.d rpcbind disable
+update-rc.d nfs-common disable
+#reboot
