@@ -85,7 +85,8 @@ rm index.html*
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 
 ## SYNC DIRECTORIES AND BACKUP
-/root/scripts/homesync.sh
+mkdir ~/work
+rclone copy gdrive:/SYNC/work ~/work
 
 ## SSH Setup
 #echo "Port 23178" >> /etc/ssh/sshd_config
