@@ -17,11 +17,11 @@ fi
 
 ## BOOTSTRAP SCRIPT ## 
 # give a chance to bail out if we aren't doing an initial setup
-read -p "run bootstrap [y/n]: " -n 1 -r
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-  exit 1
-fi
-echo
+# read -p "run bootstrap [y/n]: " -n 1 -r
+# if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+#   exit 1
+# fi
+# echo
 
 ## LOGIN
 function load-creds {
