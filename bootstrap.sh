@@ -32,6 +32,11 @@ function load-creds {
 ## RCLONE CONFIG
 curl https://rclone.org/install.sh | sudo bash
 
+## INSTALL 
+sudo apt update && sudo apt -y install unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv lastpass-cli nfs-common cifs-utils
+
+
+
 ## SET SECRETS
 load-creds
 
@@ -65,9 +70,6 @@ sudo apt-add-repository "deb https://pkgs.tailscale.com/stable/ubuntu focal main
 # install docker repo
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-# install other
-sudo apt update && sudo apt -y install unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv lastpass-cli nfs-common cifs-utils
 
 ## CONFIGURE TOOLS
 tailscale up --authkey=${TAILSCALE_KEY}
