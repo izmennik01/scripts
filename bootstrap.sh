@@ -15,6 +15,12 @@ if [ -z ${EMAIL+x} ]; then
 	exit 1
 fi
 
+## INSTALL 
+sudo apt update && sudo apt -y install lastpass-cli unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv nfs-common cifs-utils
+
+
+
+
 ## BOOTSTRAP SCRIPT ## 
 # give a chance to bail out if we aren't doing an initial setup
 # read -p "run bootstrap [y/n]: " -n 1 -r
@@ -31,10 +37,6 @@ function load-creds {
 
 ## RCLONE CONFIG
 curl https://rclone.org/install.sh | sudo bash
-
-## INSTALL 
-sudo apt update && sudo apt -y install unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv lastpass-cli nfs-common cifs-utils
-
 
 
 ## SET SECRETS
