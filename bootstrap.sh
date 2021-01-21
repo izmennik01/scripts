@@ -15,9 +15,22 @@ if [ -z ${EMAIL+x} ]; then
 	exit 1
 fi
 
-## INSTALL 
-sudo apt update && sudo apt -y install lastpass-cli unzip nmap mosh docker-ce make virtualenv python3-venv nfs-common cifs-utils vim
 
+# install tfenv for terraform
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+
+# install tailscale repo
+curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
+sudo apt-add-repository "deb https://pkgs.tailscale.com/stable/ubuntu focal main"
+
+# install docker repo
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+## INSTALL 
+sudo apt -y update && sudo apt -y install lastpass-cli unzip nmap mosh docker-ce make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
+sudo apt upgrade
 
 
 
@@ -64,18 +77,6 @@ lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 chmod 400 ~/.ssh/*
 
 ## INSTALL TOOLS
-
-# install tfenv for terraform
-git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
-
-# install tailscale repo
-curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
-sudo apt-add-repository "deb https://pkgs.tailscale.com/stable/ubuntu focal main"
-
-# install docker repo
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 ## CONFIGURE TOOLS
 tailscale up --authkey=${TAILSCALE_KEY}
