@@ -48,6 +48,10 @@ TAILSCALE_KEY=$(lpass show ${TAILSCALE_ID} --notes)
 echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> ~/.bash_profile
 
 # SSH
+mkdir -p ~/.ssh
+chmod 600 ~/.ssh
+mkdir -p ~/.config/rclone/
+
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > ~/.ssh/key
 ROOT_ID=$(lpass ls Root | grep -i localhost | grep -oP '(?<=id: )([0-9]+)')
