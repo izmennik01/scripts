@@ -16,7 +16,7 @@ if [ -z ${EMAIL+x} ]; then
 fi
 
 ## INSTALL 
-sudo apt update && sudo apt -y install lastpass-cli unzip nmap mosh terraform tailscale docker-ce make virtualenv python3-venv nfs-common cifs-utils
+sudo apt update && sudo apt -y install lastpass-cli unzip nmap mosh docker-ce make virtualenv python3-venv nfs-common cifs-utils
 
 
 
