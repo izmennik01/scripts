@@ -20,16 +20,23 @@ fi
 git clone https://github.com/tfutils/tfenv.git ~/.tfenv
 echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
 
-# install tailscale repo
+# # install tailscale repo
 curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
 sudo apt-add-repository "deb https://pkgs.tailscale.com/stable/ubuntu focal main"
+curl -fsSL https://pkgs.tailscale.com/stable/raspbian/buster.gpg | sudo apt-key add -
+curl -fsSL https://pkgs.tailscale.com/stable/raspbian/buster.list | sudo tee /etc/apt/sources.list.d/tailscale.list
 
 # install docker repo
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+usermod -aG docker Pi
+
+
 
 ## INSTALL 
-sudo apt -y update && sudo apt -y install lastpass-cli unzip nmap mosh docker-ce make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
+sudo apt -y update && sudo apt -y install lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
 sudo apt upgrade
 
 
