@@ -15,6 +15,8 @@ if [ -z ${EMAIL+x} ]; then
 	exit 1
 fi
 
+NEW_USER=$(echo $EMAIL| cut -d@ -f1)
+useradd -m -s /bin/bash ${NEW_USER}
 
 # install tfenv for terraform
 git clone https://github.com/tfutils/tfenv.git ~/.tfenv
@@ -76,6 +78,10 @@ SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > ~/.ssh/key
 ROOT_ID=$(lpass ls Root | grep -i localhost | grep -oP '(?<=id: )([0-9]+)')
 echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
+
+# set other user password
+#echo passwd ${NEW_USER} --stdin 
+
 
 RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
