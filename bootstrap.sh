@@ -73,6 +73,7 @@ mkdir -p ~/.config/rclone/
 
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > ~/.ssh/key
+
 ROOT_ID=$(lpass ls Root | grep -i Local-root | grep -oP '(?<=id: )([0-9]+)')
 echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
 
