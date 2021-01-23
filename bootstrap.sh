@@ -15,9 +15,6 @@ if [ -z ${EMAIL+x} ]; then
 	exit 1
 fi
 
-NEW_USER=$(echo $EMAIL| cut -d@ -f1)
-useradd -m -s /bin/bash ${NEW_USER}
-
 # install tfenv for terraform
 git clone https://github.com/tfutils/tfenv.git ~/.tfenv
 echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
@@ -76,11 +73,15 @@ mkdir -p ~/.config/rclone/
 
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > ~/.ssh/key
-ROOT_ID=$(lpass ls Root | grep -i localhost | grep -oP '(?<=id: )([0-9]+)')
+ROOT_ID=$(lpass ls Root | grep -i Local-root | grep -oP '(?<=id: )([0-9]+)')
 echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
 
-# set other user password
-#echo passwd ${NEW_USER} --stdin 
+
+NEW_USER=$(echo $EMAIL| cut -d@ -f1)
+useradd -m -s /bin/bash ${NEW_USER}
+USER_ID=$(lpass ls Root | grep -i Local-user | grep -oP '(?<=id: )([0-9]+)')
+echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
+echo '${NEW_USER}  ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
 
 RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
