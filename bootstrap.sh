@@ -37,7 +37,7 @@ usermod -aG docker Pi
 
 ## INSTALL 
 sudo apt -y update && sudo apt -y install lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
-sudo apt upgrade
+sudo apt -y upgrade
 
 
 
