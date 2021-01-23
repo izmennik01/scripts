@@ -95,7 +95,7 @@ source ~/.bash_profile
 tfenv install latest
 
 ## Update dynamic DNS
-CLOUDNS_ID=$(lpass ls Root | grep -i CLOUDNS | grep -oP '(?<=id: )([0-9]+)')
+CLOUDNS_ID=$(lpass ls Root | grep -i CLOUDNS_${HOSTNAME} | grep -oP '(?<=id: )([0-9]+)')
 wget -q --read-timeout=0.0 --waitretry=5 --tries=400 --background $(lpass show ${CLOUDNS_ID} --notes)
 rm index.html*
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
