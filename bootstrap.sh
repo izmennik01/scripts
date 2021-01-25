@@ -82,7 +82,7 @@ NEW_USER=$(echo $EMAIL| cut -d@ -f1)
 useradd -m -s /bin/bash ${NEW_USER}
 USER_ID=$(lpass ls Root | grep -i Local-user | grep -oP '(?<=id: )([0-9]+)')
 echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
-echo '${NEW_USER}  ALL=(ALL:ALL) ALL' >> /etc/sudoers
+echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 
 RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
