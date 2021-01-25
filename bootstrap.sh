@@ -30,7 +30,6 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-usermod -aG docker Pi
 
 
 
@@ -94,6 +93,9 @@ lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 #TAILSCALEKEY=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)' | xargs -I{} -n1 bash -c 'lpass show {} --notes > $(eval echo $(lpass show --name {}))')
 chmod 400 ~/.ssh/key
 chmod 600 ~/.ssh/authorized_keys
+usermod -aG docker pi
+usermod -aG docker ${NEW_USER}
+
 
 ## INSTALL TOOLS
 
