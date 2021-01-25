@@ -68,19 +68,22 @@ echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> ~/.bash_profile
 
 # SSH
 mkdir -p ~/.ssh
-chmod 600 ~/.ssh
+chmod 700 ~/.ssh
 mkdir -p ~/.config/rclone/
 
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > ~/.ssh/key
 
-ROOT_ID=$(lpass ls Root | grep -i Local-root | grep -oP '(?<=id: )([0-9]+)')
+SSHPUB_ID=$(lpass ls Root | grep -i SSH_PUB_KEY | grep -oP '(?<=id: )([0-9]+)')
+lpass show ${SSHPUB_ID} --notes > ~/.ssh/authorized_keys
+
+ROOT_ID=$(lpass ls Root | grep -i Local_root | grep -oP '(?<=id: )([0-9]+)')
 echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
 
 
 NEW_USER=$(echo $EMAIL| cut -d@ -f1)
 useradd -m -s /bin/bash ${NEW_USER}
-USER_ID=$(lpass ls Root | grep -i Local-user | grep -oP '(?<=id: )([0-9]+)')
+USER_ID=$(lpass ls Root | grep -i Local_user | grep -oP '(?<=id: )([0-9]+)')
 echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
 echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
@@ -89,7 +92,8 @@ RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 
 #TAILSCALEKEY=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)' | xargs -I{} -n1 bash -c 'lpass show {} --notes > $(eval echo $(lpass show --name {}))')
-chmod 400 ~/.ssh/*
+chmod 400 ~/.ssh/key
+chmod 600 ~/.ssh/authorized_keys
 
 ## INSTALL TOOLS
 
