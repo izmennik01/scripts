@@ -15,9 +15,12 @@ if [ -z ${EMAIL+x} ]; then
 	exit 1
 fi
 
+NEW_USER=$(echo $EMAIL| cut -d@ -f1)
+useradd -m -s /bin/bash ${NEW_USER}
+
 # install tfenv for terraform
-git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+git clone https://github.com/tfutils/tfenv.git /home/${NEW_USER}/.tfenv
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> /home/${NEW_USER}/.bash_profile
 
 # # install tailscale repo
 curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
@@ -63,25 +66,22 @@ load-creds
 # TAILSCALE VPN
 TAILSCALE_ID=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)')
 TAILSCALE_KEY=$(lpass show ${TAILSCALE_ID} --notes)
-echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> ~/.bash_profile
+echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> /home/${NEW_USER}/.bash_profile
 
 # SSH
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
-mkdir -p ~/.config/rclone/
+mkdir -p /home/${NEW_USER}/.ssh
+chmod 700 /home/${NEW_USER}/.ssh
+mkdir -p /home/${NEW_USER}/.config/rclone/
 
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
-lpass show ${SSH_ID} --notes > ~/.ssh/key
+lpass show ${SSH_ID} --notes > /home/${NEW_USER}/.ssh/key
 
 SSHPUB_ID=$(lpass ls Root | grep -i SSH_PUB_KEY | grep -oP '(?<=id: )([0-9]+)')
-lpass show ${SSHPUB_ID} --notes > ~/.ssh/authorized_keys
+lpass show ${SSHPUB_ID} --notes > /home/${NEW_USER}/.ssh/authorized_keys
 
 ROOT_ID=$(lpass ls Root | grep -i Local_root | grep -oP '(?<=id: )([0-9]+)')
 echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
 
-
-NEW_USER=$(echo $EMAIL| cut -d@ -f1)
-useradd -m -s /bin/bash ${NEW_USER}
 USER_ID=$(lpass ls Root | grep -i Local_user | grep -oP '(?<=id: )([0-9]+)')
 echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
 echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
@@ -91,8 +91,8 @@ RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 
 #TAILSCALEKEY=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)' | xargs -I{} -n1 bash -c 'lpass show {} --notes > $(eval echo $(lpass show --name {}))')
-chmod 400 ~/.ssh/key
-chmod 600 ~/.ssh/authorized_keys
+chmod 400 /home/${NEW_USER}/.ssh/key
+chmod 600 /home/${NEW_USER}/.ssh/authorized_keys
 usermod -aG docker pi
 usermod -aG docker ${NEW_USER}
 
@@ -102,21 +102,18 @@ usermod -aG docker ${NEW_USER}
 ## CONFIGURE TOOLS
 tailscale up --authkey=${TAILSCALE_KEY}
 
-echo "HISTSIZE=-1" >> ~/.bash_profile
-echo "HISTFILESIZE=-1" >> ~/.bash_profile
-
-source ~/.bash_profile
-tfenv install latest
+echo "HISTSIZE=-1" >> /home/${NEW_USER}/.bash_profile
+echo "HISTFILESIZE=-1" >> /${NEW_USER}/.bash_profile
 
 ## Update dynamic DNS
 CLOUDNS_ID=$(lpass ls Root | grep -i CLOUDNS_${HOSTNAME} | grep -oP '(?<=id: )([0-9]+)')
 wget -q --read-timeout=0.0 --waitretry=5 --tries=400 --background $(lpass show ${CLOUDNS_ID} --notes)
-rm index.html*
+rm "'index.html*"
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 
 ## SYNC DIRECTORIES AND BACKUP
-mkdir ~/work
-rclone copy gdrive:/SYNC/work ~/work
+mkdir /home/${NEW_USER}/work
+rclone copy gdrive:/SYNC/work /home/${NEW_USER}/work
 
 ## SSH Setup
 #echo "Port 23178" >> /etc/ssh/sshd_config
