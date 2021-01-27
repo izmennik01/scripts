@@ -103,12 +103,12 @@ usermod -aG docker ${NEW_USER}
 tailscale up --authkey=${TAILSCALE_KEY}
 
 echo "HISTSIZE=-1" >> /home/${NEW_USER}/.bash_profile
-echo "HISTFILESIZE=-1" >> /${NEW_USER}/.bash_profile
+echo "HISTFILESIZE=-1" >> /home/${NEW_USER}/.bash_profile
 
 ## Update dynamic DNS
 CLOUDNS_ID=$(lpass ls Root | grep -i CLOUDNS_${HOSTNAME} | grep -oP '(?<=id: )([0-9]+)')
 wget -q --read-timeout=0.0 --waitretry=5 --tries=400 --background $(lpass show ${CLOUDNS_ID} --notes)
-rm "'index.html*"
+rm *index.html*
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 
 ## SYNC DIRECTORIES AND BACKUP
