@@ -16,7 +16,14 @@ if [ -z ${EMAIL+x} ]; then
 fi
 
 NEW_USER=$(echo $EMAIL| cut -d@ -f1)
-useradd -m -s /bin/bash ${NEW_USER}
+
+if id "$1" &>/dev/null; then
+    echo 'User Found. Skipping creation'
+else
+    echo 'User not found. Creating user'
+    useradd -m -s /bin/bash ${NEW_USER}
+fi
+
 
 # install tfenv for terraform
 git clone https://github.com/tfutils/tfenv.git /home/${NEW_USER}/.tfenv
@@ -35,11 +42,9 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 
 
-
 ## INSTALL 
 sudo apt -y update && sudo apt -y install lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
 sudo apt -y upgrade
-
 
 
 ## BOOTSTRAP SCRIPT ## 
@@ -53,7 +58,7 @@ sudo apt -y upgrade
 ## LOGIN
 function load-creds {
   LPASS_DISABLE_PINENTRY=1 lpass login ${EMAIL}
-	mkdir -p /root/.local/share/lpass
+  mkdir -p /root/.local/share/lpass
 }
 
 ## RCLONE CONFIG
@@ -69,9 +74,24 @@ TAILSCALE_KEY=$(lpass show ${TAILSCALE_ID} --notes)
 echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> /home/${NEW_USER}/.bash_profile
 
 # SSH
+
 mkdir -p /home/${NEW_USER}/.ssh
 chmod 700 /home/${NEW_USER}/.ssh
 mkdir -p /home/${NEW_USER}/.config/rclone/
+sed -i "s/.*RSAAuthentication.*/RSAAuthentication yes/g" /etc/ssh/sshd_config
+sed -i "s/.*PubkeyAuthentication.*/PubkeyAuthentication yes/g" /etc/ssh/sshd_config
+sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication no/g" /etc/ssh/sshd_config
+sed -i "s/.*AuthorizedKeysFile.*/AuthorizedKeysFile\t\.ssh\/authorized_keys/g" /etc/ssh/sshd_config
+sed -i "s/.*PermitRootLogin.*/PermitRootLogin no/g" /etc/ssh/sshd_config
+#sed -i "s/.*Port.*/Port 23178/g" /etc/ssh/sshd_config
+echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
+chmod 400 /home/${NEW_USER}/.ssh/key
+chmod 600 /home/${NEW_USER}/.ssh/authorized_keys
+usermod -aG docker pi
+usermod -aG docker ${NEW_USER}
+
+
+# SHHH
 
 SSH_ID=$(lpass ls Root | grep -i SSH_KEY | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${SSH_ID} --notes > /home/${NEW_USER}/.ssh/key
@@ -84,18 +104,11 @@ echo "root:$(lpass show ${ROOT_ID} --notes)" | chpasswd
 
 USER_ID=$(lpass ls Root | grep -i Local_user | grep -oP '(?<=id: )([0-9]+)')
 echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
-echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
-
 
 RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
 lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 
 #TAILSCALEKEY=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)' | xargs -I{} -n1 bash -c 'lpass show {} --notes > $(eval echo $(lpass show --name {}))')
-chmod 400 /home/${NEW_USER}/.ssh/key
-chmod 600 /home/${NEW_USER}/.ssh/authorized_keys
-usermod -aG docker pi
-usermod -aG docker ${NEW_USER}
-
 
 ## INSTALL TOOLS
 
@@ -115,15 +128,13 @@ unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 mkdir /home/${NEW_USER}/work
 rclone copy gdrive:/SYNC/work /home/${NEW_USER}/work
 
-## SSH Setup
-#echo "Port 23178" >> /etc/ssh/sshd_config
-#systemctl restart sshd
-
 eval `ssh-agent`
 
 ## STATUS
-tailscale status
+systemctl restart sshd
 sudo systemctl stop nginx
 update-rc.d rpcbind disable
 update-rc.d nfs-common disable
-#reboot
+
+tailscale status
+
