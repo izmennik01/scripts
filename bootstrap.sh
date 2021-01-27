@@ -76,7 +76,6 @@ echo "export TAILSCALE_KEY=\"${TAILSCALE_KEY}\"" >> /home/${NEW_USER}/.bash_prof
 # SSH
 
 mkdir -p /home/${NEW_USER}/.ssh
-chmod 700 /home/${NEW_USER}/.ssh
 mkdir -p /home/${NEW_USER}/.config/rclone/
 sed -i "s/.*RSAAuthentication.*/RSAAuthentication yes/g" /etc/ssh/sshd_config
 sed -i "s/.*PubkeyAuthentication.*/PubkeyAuthentication yes/g" /etc/ssh/sshd_config
@@ -87,6 +86,8 @@ sed -i "s/.*PermitRootLogin.*/PermitRootLogin no/g" /etc/ssh/sshd_config
 echo "${NEW_USER}  ALL=(ALL:ALL) ALL" >> /etc/sudoers
 chmod 400 /home/${NEW_USER}/.ssh/key
 chmod 600 /home/${NEW_USER}/.ssh/authorized_keys
+chmod 700 /home/${NEW_USER}/.ssh
+chown ${NEW_USER} -R /home/${NEW_USER}/
 usermod -aG docker pi
 usermod -aG docker ${NEW_USER}
 
