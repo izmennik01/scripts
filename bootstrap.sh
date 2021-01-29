@@ -115,6 +115,8 @@ lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
 
 ## CONFIGURE TOOLS
 tailscale up --authkey=${TAILSCALE_KEY}
+TAILSCLALE_IP=$(ip addr show tailscale0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+sed -i 's/.*ListenAddress.*/ListenAddress ${TAILSCALE_IP}/g' /etc/ssh/sshd_config
 
 echo "HISTSIZE=-1" >> /home/${NEW_USER}/.bash_profile
 echo "HISTFILESIZE=-1" >> /home/${NEW_USER}/.bash_profile
