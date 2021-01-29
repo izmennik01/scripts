@@ -107,7 +107,7 @@ USER_ID=$(lpass ls Root | grep -i Local_user | grep -oP '(?<=id: )([0-9]+)')
 echo "${NEW_USER}:$(lpass show ${USER_ID} --notes)" | chpasswd
 
 RCLONE_ID=$(lpass ls Root | grep -i GDRIVE | grep -oP '(?<=id: )([0-9]+)')
-lpass show ${RCLONE_ID} --notes > /root/.config/rclone/rclone.conf
+lpass show ${RCLONE_ID} --notes > /home/${NEW_USER}/.config/rclone/rclone.conf
 
 #TAILSCALEKEY=$(lpass ls Root | grep -i Tailscale | grep -oP '(?<=id: )([0-9]+)' | xargs -I{} -n1 bash -c 'lpass show {} --notes > $(eval echo $(lpass show --name {}))')
 
