@@ -29,13 +29,6 @@ fi
 #git clone https://github.com/tfutils/tfenv.git /home/${NEW_USER}/.tfenv
 #echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> /home/${NEW_USER}/.bash_profile
 
-TER_VER=`curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1'`
-wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
-unzip terraform_${TER_VER}_linux_amd64.zip
-mv terraform /usr/local/bin/
-
-
-
 # # install tailscale repo
 curl https://pkgs.tailscale.com/stable/ubuntu/focal.gpg | sudo apt-key add -
 sudo apt-add-repository "deb https://pkgs.tailscale.com/stable/ubuntu focal main"
@@ -52,6 +45,12 @@ sh get-docker.sh
 ## INSTALL 
 sudo apt -y update && sudo apt -y install tor dnsutils proxychains irssi lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
 sudo apt -y upgrade
+
+
+TER_VER=`curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1'`
+wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
+unzip terraform_${TER_VER}_linux_amd64.zip
+mv terraform /usr/local/bin/
 
 
 ## BOOTSTRAP SCRIPT ## 
