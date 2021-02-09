@@ -43,7 +43,7 @@ sh get-docker.sh
 
 
 ## INSTALL 
-sudo apt -y update && sudo apt -y install lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
+sudo apt -y update && sudo apt -y install tor proxychains irssi lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
 sudo apt -y upgrade
 
 
@@ -120,11 +120,14 @@ sed -i 's/.*ListenAddress.*/ListenAddress ${TAILSCALE_IP}/g' /etc/ssh/sshd_confi
 
 echo "HISTSIZE=-1" >> /home/${NEW_USER}/.bash_profile
 echo "HISTFILESIZE=-1" >> /home/${NEW_USER}/.bash_profile
+DO_TOKEN_=$(lpass ls Root | grep -i GO_TOKEN | grep -oP '(?<=id: )([0-9]+)')
+DO_TOKEN=$(lpass show ${DO_TOKEN_} --notes) 
+echo "export DO_TOKEN=${DO_TOKEN}" >> ~/.bash_profile
+
 
 ## Update dynamic DNS
 CLOUDNS_ID=$(lpass ls Root | grep -i CLOUDNS_${HOSTNAME} | grep -oP '(?<=id: )([0-9]+)')
 wget -q --read-timeout=0.0 --waitretry=5 --tries=400 --background $(lpass show ${CLOUDNS_ID} --notes)
-rm *index.html*
 unset CLOUDNS_ID TAILSCALE_ID SSH_ID ROOT_ID
 
 ## SYNC DIRECTORIES AND BACKUP
