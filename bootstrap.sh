@@ -43,7 +43,7 @@ sh get-docker.sh
 
 
 ## INSTALL 
-sudo apt -y update && sudo apt -y install tor dnsutils proxychains irssi lastpass-cli unzip tmux nmap mosh make terraform tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
+sudo apt -y update && sudo apt -y install tor dnsutils proxychains irssi lastpass-cli unzip tmux nmap mosh make tailscale virtualenv python3-venv nfs-common cifs-utils vim software-properties-common
 sudo apt -y upgrade
 
 
